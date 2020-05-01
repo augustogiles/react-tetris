@@ -76,7 +76,10 @@ const Tetris = () => {
     drop();
   }
 
-  const move = ( {keyCode} ) => {
+  const move = ( event ) => {
+    let {keyCode} = event;
+    event.preventDefault();
+    
     if(!gameOver){
       if(keyCode === 37){
         movePlayer(-1);
@@ -87,7 +90,6 @@ const Tetris = () => {
       } else if(keyCode === 38){
         playerRotate(stage, 1);
       } else if (keyCode === 32){
-        window.event.preventDefault();
         dropPlayer();
       }
     }
