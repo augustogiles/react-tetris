@@ -13,6 +13,7 @@ import { useStage } from '../hooks/useStage';
 import { useGameStatus } from '../hooks/useGameStatus';
 
 const DROP_TIME_FORMULA = (level) => 1000 / (level + 1) + 200;
+let localScore = localStorage.getItem("bestScore") || 0 ;
 
 const Tetris = () => {
 
@@ -25,7 +26,6 @@ const Tetris = () => {
     rowsCleared
   ); 
 
-  console.log('re-render');
   const movePlayer = dir => {
     if(!checkCollision(player, stage, { x: dir, y: 0 })) {
       updatePlayerPos({ x: dir, y: 0 });
@@ -38,7 +38,9 @@ const Tetris = () => {
     setGameOver(false);
     setRows(0);
     setLevel(0);
+    setScore(0);
   }
+
   const drop = () => {
     if(rows > (level + 1) * 10){
       setLevel(prev => prev + 1);
@@ -49,7 +51,11 @@ const Tetris = () => {
       updatePlayerPos({ x: 0, y: 1, collided: false })
     }else{
       if(player.pos.y < 1){
-        console.log("GAME OVER");
+        if(score > localScore) {
+          localScore = score;
+          localStorage.setItem("bestScore", localScore);
+        }
+
         setGameOver(true);
         setDropTime(null);
       }
@@ -80,8 +86,10 @@ const Tetris = () => {
         dropPlayer();
       } else if(keyCode === 38){
         playerRotate(stage, 1);
+      } else if (keyCode === 32){
+        window.event.preventDefault();
+        dropPlayer();
       }
-
     }
   }
 
@@ -105,6 +113,7 @@ const Tetris = () => {
             :
             (
               <div>
+                <Display text={`Best Score: ${localScore}`} />
                 <Display text={`Score: ${score}`} />
                 <Display text={`Rows: ${rows}`} />
                 <Display text={`Level: ${level}`} />
